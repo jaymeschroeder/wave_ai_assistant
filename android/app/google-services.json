@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "263414541910",
+    "project_id": "wave-ai-assistant",
+    "storage_bucket": "wave-ai-assistant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263414541910:android:8ed4534bbae130623c95f7",
+        "android_client_info": {
+          "package_name": "com.waveaiassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "263414541910-e5kra4k9d7vriavjachvb6dj1i8hjki8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.waveaiassistant",
+            "certificate_hash": "bd9ceaa1350b2cb1b95b0582b6e4481585c97058"
+          }
+        },
+        {
+          "client_id": "263414541910-jtqudt9vm2asvpa44rf7rrbd37hddi7c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDISvW0AdBZ3Y1t0susLh3Hw1X7qOjHcKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263414541910-a3h908pv80pa9732vks8062gs5kus62k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "263414541910-6vvkmr8o537clo1jgotakv4hjvm348o5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.waveaiassistant"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
