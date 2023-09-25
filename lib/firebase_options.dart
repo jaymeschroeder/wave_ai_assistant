@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+import 'constants/api_keys.dart';
+
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
@@ -44,7 +46,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyALD8KiHlFOUuPt8juitzZcj1h1BDqqhiE',
+    apiKey: FIREBASE_API_KEY_WEB,
     appId: '1:263414541910:web:22036375380089353c95f7',
     messagingSenderId: '263414541910',
     projectId: 'wave-ai-assistant',
@@ -54,7 +56,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDISvW0AdBZ3Y1t0susLh3Hw1X7qOjHcKk',
+    apiKey: FIREBASE_API_KEY_ANDROID,
     appId: '1:263414541910:android:f400bccbc1cb36673c95f7',
     messagingSenderId: '263414541910',
     projectId: 'wave-ai-assistant',
@@ -62,7 +64,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC0joYCTiEyRGpU8JBuH4LAS0JrqFkMydc',
+    apiKey: FIREBASE_API_KEY_MAC,
     appId: '1:263414541910:ios:8406cf77ff6114773c95f7',
     messagingSenderId: '263414541910',
     projectId: 'wave-ai-assistant',
@@ -71,7 +73,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC0joYCTiEyRGpU8JBuH4LAS0JrqFkMydc',
+    apiKey: FIREBASE_API_KEY_MAC,
     appId: '1:263414541910:ios:8406cf77ff6114773c95f7',
     messagingSenderId: '263414541910',
     projectId: 'wave-ai-assistant',

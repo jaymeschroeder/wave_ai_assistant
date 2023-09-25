@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 String BASE_URL = "https://api.openai.com/v1";
-String API_KEY = "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";
 String AD_UNIT_ID = "ca-app-pub-8432151320279223/1091800447";
 //String DEVICE_ID_S9 = "de27104a66a5101d";
 String DEVICE_ID_S9 = "49EBF358B00803A1CC708B60CB474AF6";

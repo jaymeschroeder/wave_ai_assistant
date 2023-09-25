@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:wave_ai_assistant/constants/api_keys.dart';
 import '../constants/constants.dart';
 
 // TODO The following comment block describes how to send and receive a message from chatgpt
@@ -36,7 +37,7 @@ class ChatGPTService {
     var res = await http.post(
       Uri.parse("$BASE_URL/chat/completions"),
       headers: {
-        'Authorization': 'Bearer $API_KEY',
+        'Authorization': 'Bearer $OPENAI_API_KEY',
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
