@@ -1,3 +1,4 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -6,10 +7,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:wave_ai_assistant/services/chatgpt_service.dart';
+import 'package:wave_ai_assistant/utils/language_util.dart';
 import 'package:wave_ai_assistant/widgets/gradient_button.dart';
 
 import '../constants/constants.dart';
 import '../widgets/banner_ad_widget.dart';
+import '../widgets/base_screen_state.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/frosted_glass_background.dart';
 
@@ -18,9 +21,9 @@ class AssistantScreen extends StatefulWidget {
   _AssistantScreenState createState() => _AssistantScreenState();
 }
 
-class _AssistantScreenState extends State<AssistantScreen> {
-
+class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
   BannerAd? _bannerAd;
+
   final FlutterTts flutterTts = FlutterTts();
   final stt.SpeechToText speech = stt.SpeechToText();
   String recognizedText = '';
@@ -53,7 +56,13 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 
   Future<void> initializeTextToSpeech() async {
-    await flutterTts.setLanguage('en-AU');
+    List<dynamic> voices = await flutterTts.getVoices;
+
+    voices.forEach((element) {
+      print(element);
+    });
+
+    await flutterTts.setLanguage(voices[0]['locale']);
     await flutterTts.setPitch(1.2);
 
     await flutterTts.setSpeechRate(0.5);
@@ -78,6 +87,11 @@ class _AssistantScreenState extends State<AssistantScreen> {
           }
           if (status == stt.SpeechToText.doneStatus) {
             if (recognizedText.isNotEmpty) {
+              setState(() {
+                print("Changing status text");
+                statusText = "Processing";
+              });
+
               String response = await ChatGPTService.sendMessage(recognizedText);
 
               print(response);
@@ -87,7 +101,6 @@ class _AssistantScreenState extends State<AssistantScreen> {
                 recognizedText = ''; // Reset recognizedText
                 statusText = "Wave Assistant Speaking";
               });
-
 
               flutterTts.setCompletionHandler(() {
                 setState(() {
@@ -156,11 +169,11 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildScreen(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white70.withOpacity(0),
-        title: Text('Wave Assistant'),
+        title: const Text('Wave Assistant'),
         flexibleSpace: FrostedGlassBackground(
           child: Container(
             decoration: BoxDecoration(
@@ -175,11 +188,16 @@ class _AssistantScreenState extends State<AssistantScreen> {
       ),
       drawer: CustomDrawer(),
       body: Container(
-        decoration: BoxDecoration(gradient: LinearGradient(
-          begin: Alignment.topLeft, // Define the gradient's start and end points
-          end: Alignment.bottomRight,
-          colors: [Colors.purple.withOpacity(0.2),Colors.blue.withOpacity(0.3),  Colors.purpleAccent.withOpacity(0.1)], // Define your gradient colors
-        )),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft, // Define the gradient's start and end points
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.purple.withOpacity(0.2),
+                Colors.blue.withOpacity(0.3),
+                Colors.purpleAccent.withOpacity(0.1)
+              ], // Define your gradient colors
+            )),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -192,7 +210,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Set the button's background color to red
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
@@ -207,14 +225,32 @@ class _AssistantScreenState extends State<AssistantScreen> {
                   ],
                 ),
               ),
-              Spacer(),
+              DropdownMenu(
+                  initialSelection: "en-US",
+                  onSelected: (selectedValue) async {
+                    await flutterTts.setLanguage(selectedValue!);
+                  },
+                  dropdownMenuEntries: LanguageUtil()
+                      .languages
+                      .map((language) => DropdownMenuEntry(
+                    label: language.name,
+                    value: language.code,
+                    leadingIcon: CountryFlag.fromCountryCode(
+                      language.code.substring(3),
+                      height: 24,
+                      width: 24,
+                      borderRadius: 8,
+                    ),
+                  ))
+                      .toList()),
+              const Spacer(),
               Container(
                 height: 150.0, // Set a fixed height for the container
                 alignment: Alignment.center, // Center its content vertically
                 child: Visibility(
                   visible: isListening,
                   child: SpinKitPulse(
-                    duration: Duration(seconds: 3),
+                    duration: const Duration(seconds: 3),
                     color: primaryColor,
                     size: 150.0,
                   ),
@@ -222,7 +258,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
               ),
               Text(
                 statusText, // When listening or not listening
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -240,16 +276,19 @@ class _AssistantScreenState extends State<AssistantScreen> {
                 padding: const EdgeInsets.all(24.0),
                 child: Text(
                   statusText == "Not Listening" ? previousMessage : recognizedText,
-                  style: TextStyle(color: Colors.white70),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ),
-              Spacer(),
-              SizedBox(height: 16),
+              const Spacer(),
+              const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.all(18.0),
-                child: GradientButton((){
-                  isProcessing ? null : (isListening ? stopListening() : startListening());
-                }),
+                child: GradientButton(
+                      () {
+                    isProcessing ? null : (isListening ? stopListening() : startListening());
+                  },
+                  iconColor: (statusText == "Listening") ? Colors.cyan : Colors.grey,
+                ),
               ),
             ],
           ),

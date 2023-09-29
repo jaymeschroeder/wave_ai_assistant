@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,7 +28,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: providers,
-      child: Main(hasSeenIntro: hasSeenIntro,),
+      child: Main(
+        hasSeenIntro: hasSeenIntro,
+      ),
     ),
   );
 }
@@ -70,8 +71,10 @@ class _MainState extends State<Main> {
         builder: (context, authProvider, child) {
           if (authProvider.user == null) {
             // User is not authenticated, return to the sign-in page.
-            if(widget.hasSeenIntro) return LoginPage();
-            else return Intro();
+            if (widget.hasSeenIntro)
+              return LoginPage();
+            else
+              return Intro();
           } else {
             // User is authenticated, show the main menu.
             return AssistantScreen();

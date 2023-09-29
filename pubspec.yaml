@@ -57,6 +57,7 @@ dependencies:
   google_mobile_ads: ^3.0.0
   flutter_animated_dialog: ^2.0.1
   outline_gradient_button: ^2.0.1+1
+  country_flags: ^2.1.1
 
 dev_dependencies:
   flutter_test:
