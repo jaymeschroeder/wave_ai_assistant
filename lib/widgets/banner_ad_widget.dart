@@ -34,11 +34,14 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      child: AdWidget(ad: _bannerAd!),
-      width: _bannerAd?.size.width.toDouble(),
-      height: _bannerAd?.size.height.toDouble(),
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Container(
+        alignment: Alignment.center,
+        child: AdWidget(ad: _bannerAd!),
+        width: _bannerAd?.size.width.toDouble(),
+        height: _bannerAd?.size.height.toDouble(),
+      ),
     );
   }
 

@@ -30,37 +30,57 @@ class _LoginPageState extends BaseScreenState<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Spacer(),
+                const Spacer(),
 
-                const Text(
-                  "Wave",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 47,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.cyan,
-                    shadows: [
-                      Shadow(
-                          offset: Offset(-6, -6), // Adjust the shadow offset as needed
-                          color: Colors.black,
-                          blurRadius: 44 // Shadow color
-                          ),
+                RichText(
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Wave',
+                        style: TextStyle(
+                          color: Colors.cyan,
+                          fontSize: 48, // Adjust the font size as needed
+                          fontWeight: FontWeight.bold, // You can also make it bold for emphasis
+                          shadows: [
+                            Shadow(
+                              color: Colors.black, // Shadow color
+                              offset: Offset(2, 2), // Shadow offset
+                              blurRadius: 4, // Shadow blur radius
+                            ),
+                          ],
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'ai',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 48, // Adjust the font size as needed
+                          fontWeight: FontWeight.bold, // You can also make it bold for emphasis
+                          shadows: [
+                            Shadow(
+                              color: Colors.black, // Shadow color
+                              offset: Offset(2, 2), // Shadow offset
+                              blurRadius: 4, // Shadow blur radius
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const Text(
-                  "AI Assistant",
+                  "Assistant",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    fontSize: 42, // Adjust the font size as needed
+                    fontWeight: FontWeight.bold, // You can also make it bold for emphasis
                     shadows: [
                       Shadow(
-                          offset: Offset(-6, -6), // Adjust the shadow offset as needed
-                          color: Colors.black,
-                          blurRadius: 44 // Shadow color
-                          ),
+                        color: Colors.black, // Shadow color
+                        offset: Offset(2, 2), // Shadow offset
+                        blurRadius: 4, // Shadow blur radius
+                      ),
                     ],
                   ),
                 ),

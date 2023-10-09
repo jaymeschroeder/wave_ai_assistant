@@ -18,13 +18,13 @@ import '../constants/constants.dart';
                 */
 
 class ChatGPTService {
-  static final List<Map<String, String>> _conversationHistory = [];
+  static final List<Map<String, String>> conversationHistory = [];
   static bool _isNewConversation = true;
 
   static Future<String> sendMessage(String message) async {
     if (_isNewConversation) {
       // If it's a new conversation, add a system message to set context
-      _conversationHistory.add({
+      conversationHistory.add({
         "role": "system",
         "content": "This conversation is powered by Wave AI.",
       });
@@ -32,7 +32,7 @@ class ChatGPTService {
     }
 
     // Add the user message to the conversation history
-    _conversationHistory.add({"role": "user", "content": message});
+    conversationHistory.add({"role": "user", "content": message});
 
     var res = await http.post(
       Uri.parse("$BASE_URL/chat/completions"),
@@ -42,7 +42,7 @@ class ChatGPTService {
       },
       body: jsonEncode({
         "model": "gpt-3.5-turbo",
-        "messages": _conversationHistory,
+        "messages": conversationHistory,
         "temperature": 0.8,
       }),
     );
@@ -60,7 +60,37 @@ class ChatGPTService {
       }
 
       // Add the assistant reply to the conversation history
-      _conversationHistory.add({"role": "assistant", "content": reply});
+      conversationHistory.add({"role": "assistant", "content": reply});
+
+      return reply;
+    } else {
+      throw Exception('Failed to send message: ${res.statusCode}');
+    }
+  }
+
+  static Future<String> translateMessage(String message, String toLanguage) async {
+    String completeMessage =
+        "translate the following text to $toLanguage. Do not write any additional words before or after the translated text:\n\n$message";
+
+    var res = await http.post(
+      Uri.parse("$BASE_URL/chat/completions"),
+      headers: {
+        'Authorization': 'Bearer $OPENAI_API_KEY',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant that translates text."},
+          {"role": "user", "content": completeMessage},
+        ],
+        "temperature": 0.2,
+      }),
+    );
+
+    if (res.statusCode == 200) {
+      final data = json.decode(res.body);
+      String reply = data['choices'][0]['message']['content'].toString();
 
       return reply;
     } else {
@@ -69,7 +99,7 @@ class ChatGPTService {
   }
 
   static void startNewConversation() {
-    _conversationHistory.clear();
+    conversationHistory.clear();
     _isNewConversation = true;
   }
 }

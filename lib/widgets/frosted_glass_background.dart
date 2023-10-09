@@ -18,7 +18,7 @@ class FrostedGlassBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft, // Define the gradient's start and end points
               end: Alignment.bottomRight,
-              colors: [Colors.purple.withOpacity(0.2),Colors.blue.withOpacity(0.3),  Colors.purpleAccent.withOpacity(0.1)], // Define your gradient colors
+              colors: [Colors.blue.withOpacity(0.1),  Colors.black.withOpacity(0.9)], // Define your gradient colors
             )
           ), // Adjust opacity as needed
           child: child,

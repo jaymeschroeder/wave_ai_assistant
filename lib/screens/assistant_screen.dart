@@ -1,20 +1,18 @@
-import 'package:country_flags/country_flags.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:wave_ai_assistant/services/chatgpt_service.dart';
-import 'package:wave_ai_assistant/utils/language_util.dart';
+import 'package:wave_ai_assistant/utils/alert_dialog_util.dart';
+import 'package:wave_ai_assistant/utils/modal_sheet_utils.dart' as ppt;
 import 'package:wave_ai_assistant/widgets/gradient_button.dart';
+import 'package:wave_ai_assistant/utils/modal_sheet_utils.dart';
 
 import '../constants/constants.dart';
-import '../widgets/banner_ad_widget.dart';
 import '../widgets/base_screen_state.dart';
-import '../widgets/custom_drawer.dart';
-import '../widgets/frosted_glass_background.dart';
 
 class AssistantScreen extends StatefulWidget {
   @override
@@ -22,8 +20,6 @@ class AssistantScreen extends StatefulWidget {
 }
 
 class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
-  BannerAd? _bannerAd;
-
   final FlutterTts flutterTts = FlutterTts();
   final stt.SpeechToText speech = stt.SpeechToText();
   String recognizedText = '';
@@ -44,6 +40,87 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
     } catch (error) {
       print("TTS ERROR: $error");
     }
+  }
+
+  @override
+  Widget buildScreen(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Spacer(),
+        Container(
+          height: 150.0, // Set a fixed height for the container
+          alignment: Alignment.center, // Center its content vertically
+          child: Visibility(
+            visible: isListening,
+            child: SpinKitPulse(
+              duration: const Duration(seconds: 3),
+              color: primaryColor,
+              size: 150.0,
+            ),
+          ),
+        ),
+        Text(
+          statusText, // When listening or not listening
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                  offset: Offset(-2, -2), // Adjust the shadow offset as needed
+                  color: Colors.black,
+                  blurRadius: 14 // Shadow color
+                  ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Text(
+            statusText == "Not Listening" ? previousMessage : recognizedText,
+            style: const TextStyle(color: Colors.white70),
+          ),
+        ),
+        const Spacer(),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+                onPressed: () {
+
+                  AlertDialogUtil.showConfirmationDialog(context: context, message: "Are you sure you want to clear your current chat log?", onConfirm: resetConversation);
+                },
+                icon: const Icon(
+                  Icons.cancel_presentation,
+                  size: 42,
+                  color: Colors.red,
+                )),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: GradientButton(
+                () {
+                  isProcessing ? null : (isListening ? stopListening() : startListening());
+                },
+                iconColor: (statusText == "Listening") ? Colors.cyan : Colors.grey,
+                buttonSize: 75,
+              ),
+            ),
+            IconButton(
+                onPressed: () {
+                  ModalSheetUtils.showChatLogSheet(context);
+                },
+                icon: const Icon(
+                  Icons.chat_rounded,
+                  size: 42,
+                  color: Colors.cyan,
+                )),
+          ],
+        ),
+      ],
+    );
   }
 
   // Check and request microphone permission
@@ -167,135 +244,4 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
     // Read out the response using text-to-speech
     await flutterTts.speak("Conversation cleared");
   }
-
-  @override
-  Widget buildScreen(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white70.withOpacity(0),
-        title: const Text('Wave Assistant'),
-        flexibleSpace: FrostedGlassBackground(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.blue.withOpacity(0.2), Colors.green.withOpacity(0.2)], // Define your gradient colors
-              ),
-            ),
-          ),
-        ),
-      ),
-      drawer: CustomDrawer(),
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft, // Define the gradient's start and end points
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.purple.withOpacity(0.2),
-                Colors.blue.withOpacity(0.3),
-                Colors.purpleAccent.withOpacity(0.1)
-              ], // Define your gradient colors
-            )),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              BannerAdWidget(),
-              ElevatedButton(
-                onPressed: () async {
-                  resetConversation();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // Set the button's background color to red
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.clear, // Use the "clear" icon
-                      size: 24, // Adjust the size of the icon as needed
-                    ),
-                    SizedBox(width: 8), // Add some spacing between the icon and text
-                    Text(
-                      'Clear conversation',
-                      style: TextStyle(fontSize: 16), // Adjust the text size as needed
-                    ),
-                  ],
-                ),
-              ),
-              DropdownMenu(
-                  initialSelection: "en-US",
-                  onSelected: (selectedValue) async {
-                    await flutterTts.setLanguage(selectedValue!);
-                  },
-                  dropdownMenuEntries: LanguageUtil()
-                      .languages
-                      .map((language) => DropdownMenuEntry(
-                    label: language.name,
-                    value: language.code,
-                    leadingIcon: CountryFlag.fromCountryCode(
-                      language.code.substring(3),
-                      height: 24,
-                      width: 24,
-                      borderRadius: 8,
-                    ),
-                  ))
-                      .toList()),
-              const Spacer(),
-              Container(
-                height: 150.0, // Set a fixed height for the container
-                alignment: Alignment.center, // Center its content vertically
-                child: Visibility(
-                  visible: isListening,
-                  child: SpinKitPulse(
-                    duration: const Duration(seconds: 3),
-                    color: primaryColor,
-                    size: 150.0,
-                  ),
-                ),
-              ),
-              Text(
-                statusText, // When listening or not listening
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                        offset: Offset(-2, -2), // Adjust the shadow offset as needed
-                        color: Colors.black,
-                        blurRadius: 14 // Shadow color
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Text(
-                  statusText == "Not Listening" ? previousMessage : recognizedText,
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              ),
-              const Spacer(),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: GradientButton(
-                      () {
-                    isProcessing ? null : (isListening ? stopListening() : startListening());
-                  },
-                  iconColor: (statusText == "Listening") ? Colors.cyan : Colors.grey,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-// Implement the speech recognition and text-to-speech logic here.
 }

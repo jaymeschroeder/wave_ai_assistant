@@ -5,8 +5,9 @@ import 'package:outline_gradient_button/outline_gradient_button.dart';
 class GradientButton extends StatelessWidget {
   final Function onTap;
   final Color iconColor;
+  final double buttonSize;
 
-  GradientButton(this.onTap, {super.key, required this.iconColor});
+  GradientButton(this.onTap, {super.key, required this.iconColor, required this.buttonSize});
 
   @override
   Widget build(BuildContext context) {
@@ -23,23 +24,23 @@ class GradientButton extends StatelessWidget {
           begin: const Alignment(-1, -1),
           end: const Alignment(2, 2),
         ),
-        strokeWidth: 6,
+        strokeWidth: 3,
         padding: EdgeInsets.zero,
         radius: Radius.circular(333),
         child: SizedBox(
-          width: 154,
-          height: 154,
+          width: buttonSize,
+          height: buttonSize,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(bottom: 18.0),
-                child: Icon(Icons.touch_app, color: iconColor, size: 55),
+                padding: const EdgeInsets.only(bottom: 6.0),
+                child: Icon(Icons.touch_app, color: iconColor, size: buttonSize * 0.35),
               ),
               const Padding(
                 padding: EdgeInsets.only(bottom: 18.0),
-                child: Text('Tap to speak', style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text('Tap to speak', style: TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ],
           ),

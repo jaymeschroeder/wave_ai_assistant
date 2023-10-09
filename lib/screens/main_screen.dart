@@ -9,6 +9,7 @@ import '../providers/auth_provider.dart';
 import '../utils/alert_dialog_util.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/frosted_glass_background.dart';
+import 'assistant_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -51,7 +52,7 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
               return IconButton(
                 icon: Icon(
                   Icons.menu,
-                  color: Colors.cyan,
+                  color: Colors.white,
                 ),
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
@@ -60,9 +61,41 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
             },
           ),
           centerTitle: true,
-          title: Text(
-            'Wave AI',
-            style: TextStyle(color: Colors.cyan),
+          title: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Wave',
+                  style: TextStyle(
+                    color: Colors.cyan,
+                    fontSize: 32, // Adjust the font size as needed
+                    fontWeight: FontWeight.bold, // You can also make it bold for emphasis
+                    shadows: [
+                      Shadow(
+                        color: Colors.black, // Shadow color
+                        offset: Offset(2, 2), // Shadow offset
+                        blurRadius: 4, // Shadow blur radius
+                      ),
+                    ],
+                  ),
+                ),
+                TextSpan(
+                  text: 'ai',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32, // Adjust the font size as needed
+                    fontWeight: FontWeight.bold, // You can also make it bold for emphasis
+                    shadows: [
+                      Shadow(
+                        color: Colors.black, // Shadow color
+                        offset: Offset(2, 2), // Shadow offset
+                        blurRadius: 4, // Shadow blur radius
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           backgroundColor: Colors.grey.withOpacity(0.15),
         ),
@@ -73,7 +106,7 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
-                DrawerHeader(
+                const DrawerHeader(
                   child: Center(
                     child: Column(
                       children: [
@@ -101,6 +134,23 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
                       ],
                     ),
                   ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.person_outlined,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    'Assistant',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _currentScreen = AssistantScreen();
+                    });
+                    // Handle drawer item tap for Home
+                  },
                 ),
                 ListTile(
                   leading: Icon(
