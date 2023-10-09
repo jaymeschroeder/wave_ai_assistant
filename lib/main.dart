@@ -9,6 +9,7 @@ import 'package:wave_ai_assistant/providers/auth_provider.dart';
 import 'package:wave_ai_assistant/screens/assistant_screen.dart';
 import 'package:wave_ai_assistant/screens/intro.dart';
 import 'package:wave_ai_assistant/screens/login_page.dart';
+import 'package:wave_ai_assistant/screens/main_screen.dart';
 import 'package:wave_ai_assistant/services/shared_preferences_service.dart';
 
 List<SingleChildWidget> providers = [
@@ -64,20 +65,21 @@ class _MainState extends State<Main> {
       theme: ThemeData(
         primaryTextTheme: GoogleFonts.montserratTextTheme(),
         textTheme: GoogleFonts.montserratTextTheme(),
-        scaffoldBackgroundColor: Colors.white10,
         primaryColor: primaryColor,
+        scaffoldBackgroundColor: Colors.blue.withOpacity(0),
       ),
       home: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           if (authProvider.user == null) {
             // User is not authenticated, return to the sign-in page.
-            if (widget.hasSeenIntro)
+            if (widget.hasSeenIntro) {
               return LoginPage();
-            else
+            } else {
               return Intro();
+            }
           } else {
             // User is authenticated, show the main menu.
-            return AssistantScreen();
+            return MainScreen();
           }
         },
       ),

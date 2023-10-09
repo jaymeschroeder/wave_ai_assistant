@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../providers/auth_provider.dart';
+import '../screens/translation_screen.dart';
 import '../utils/alert_dialog_util.dart';
 import 'frosted_glass_background.dart';
 
@@ -18,7 +19,7 @@ class CustomDrawer extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft, // Define the gradient's start and end points
           end: Alignment.bottomRight,
-          colors: [Colors.blue.withOpacity(0.5), Colors.green.withOpacity(0.2)], // Define your gradient colors
+          colors: [Colors.blue.withOpacity(0.5), Colors.black.withOpacity(0.2)], // Define your gradient colors
         ),
       ),
       child: Drawer(
@@ -69,6 +70,7 @@ class CustomDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.white70),
                 ),
                 onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => TranslationScreen()));
                   // Handle drawer item tap for Home
                 },
               ),
