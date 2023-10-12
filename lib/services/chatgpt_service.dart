@@ -18,21 +18,21 @@ import '../constants/constants.dart';
                 */
 
 class ChatGPTService {
-  static final List<Map<String, String>> conversationHistory = [];
-  static bool _isNewConversation = true;
+  static final List<Map<String, String>> assistantHistory = [];
+  static bool _isNewAssistantConversation = true;
 
   static Future<String> sendMessage(String message) async {
-    if (_isNewConversation) {
+    if (_isNewAssistantConversation) {
       // If it's a new conversation, add a system message to set context
-      conversationHistory.add({
+      assistantHistory.add({
         "role": "system",
         "content": "This conversation is powered by Wave AI.",
       });
-      _isNewConversation = false;
+      _isNewAssistantConversation = false;
     }
 
     // Add the user message to the conversation history
-    conversationHistory.add({"role": "user", "content": message});
+    assistantHistory.add({"role": "user", "content": message});
 
     var res = await http.post(
       Uri.parse("$BASE_URL/chat/completions"),
@@ -42,7 +42,7 @@ class ChatGPTService {
       },
       body: jsonEncode({
         "model": "gpt-3.5-turbo",
-        "messages": conversationHistory,
+        "messages": assistantHistory,
         "temperature": 0.8,
       }),
     );
@@ -60,7 +60,7 @@ class ChatGPTService {
       }
 
       // Add the assistant reply to the conversation history
-      conversationHistory.add({"role": "assistant", "content": reply});
+      assistantHistory.add({"role": "assistant", "content": reply});
 
       return reply;
     } else {
@@ -98,8 +98,8 @@ class ChatGPTService {
     }
   }
 
-  static void startNewConversation() {
-    conversationHistory.clear();
-    _isNewConversation = true;
+  static void resetAssistant() {
+    assistantHistory.clear();
+    _isNewAssistantConversation = true;
   }
 }

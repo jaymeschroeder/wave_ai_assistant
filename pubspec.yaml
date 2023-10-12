@@ -64,6 +64,9 @@ dependencies:
       url: https://github.com/followthemoney1/modal_bottom_sheet.git
       ref: main
       path: modal_bottom_sheet
+  cloud_firestore: ^4.9.3
+  cloud_functions: ^4.4.2
+  flutter_stripe: ^9.4.0
 
 dev_dependencies:
   flutter_test:

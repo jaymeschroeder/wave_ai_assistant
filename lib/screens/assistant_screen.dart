@@ -12,6 +12,7 @@ import 'package:wave_ai_assistant/widgets/gradient_button.dart';
 import 'package:wave_ai_assistant/utils/modal_sheet_utils.dart';
 
 import '../constants/constants.dart';
+import '../services/stripe_service.dart';
 import '../widgets/base_screen_state.dart';
 
 class AssistantScreen extends StatefulWidget {
@@ -29,8 +30,6 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
   bool isProcessing = false; // Add a flag for processing speech
   bool isResponseInListFormat = false; // Add a variable to track list format response
 
-  List<String> steps = []; // Store the list of steps or items
-
   @override
   void initState() {
     super.initState();
@@ -47,7 +46,7 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Spacer(),
+        const Spacer(),
         Container(
           height: 150.0, // Set a fixed height for the container
           alignment: Alignment.center, // Center its content vertically
@@ -90,8 +89,10 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
           children: [
             IconButton(
                 onPressed: () {
-
-                  AlertDialogUtil.showConfirmationDialog(context: context, message: "Are you sure you want to clear your current chat log?", onConfirm: resetConversation);
+                  AlertDialogUtil.showConfirmationDialog(
+                      context: context,
+                      message: "Are you sure you want to clear your current chat log?",
+                      onConfirm: resetConversation);
                 },
                 icon: const Icon(
                   Icons.cancel_presentation,
@@ -134,10 +135,6 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
 
   Future<void> initializeTextToSpeech() async {
     List<dynamic> voices = await flutterTts.getVoices;
-
-    voices.forEach((element) {
-      print(element);
-    });
 
     await flutterTts.setLanguage(voices[0]['locale']);
     await flutterTts.setPitch(1.2);
@@ -234,7 +231,7 @@ class _AssistantScreenState extends BaseScreenState<AssistantScreen> {
     // Implement logic to send recognizedText to ChatGPT API
     // and play the response using text-to-speech
 
-    ChatGPTService.startNewConversation();
+    ChatGPTService.resetAssistant();
 
     setState(() {
       previousMessage = "";

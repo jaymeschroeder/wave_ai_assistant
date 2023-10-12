@@ -20,7 +20,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends BaseScreenState<LoginPage> {
   @override
   Widget buildScreen(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
 
     return Material(
       color: Colors.white.withOpacity(0),
@@ -33,6 +32,7 @@ class _LoginPageState extends BaseScreenState<LoginPage> {
                 const Spacer(),
 
                 RichText(
+                  textAlign: TextAlign.center,
                   text: const TextSpan(
                     children: [
                       TextSpan(

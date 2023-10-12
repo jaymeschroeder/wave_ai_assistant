@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth_provider.dart';
 
 abstract class BaseScreenState<T extends StatefulWidget> extends State<T> with SingleTickerProviderStateMixin {
+  late AuthProvider authProvider;
+
   late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation; // Use double type for fade effect
 
   // Abstract method that must be implemented by subclasses
   Widget buildScreen(BuildContext context);
@@ -12,20 +17,22 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> with S
   void initState() {
     super.initState();
 
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     // Initialize the animation controller
     _controller = AnimationController(
-      duration: Duration(milliseconds: 500), // Set the duration as needed
+      duration: Duration(milliseconds: 750),  // Set the duration as needed
       vsync: this,
     );
 
-    // Create a slide animation with a bounce effect
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(1.0, 0.0), // Start off-screen to the right
-      end: Offset(0.0, 0.0), // End at the center of the screen
+    // Create a fade animation
+    _fadeAnimation = Tween<double>(
+      begin: 0.0, // Start with transparency 0 (fully transparent)
+      end: 1.0, // End with transparency 1 (fully opaque)
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeOutBack, // Use a bounce curve
+        curve: Curves.easeInOutCubicEmphasized, // Use a suitable curve
       ),
     );
 
@@ -52,14 +59,14 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> with S
           begin: Alignment.topLeft, // Define the gradient's start and end points
           end: Alignment.bottomRight,
           colors: [
-            Colors.black.withOpacity(0.2),
-            Colors.blue.withOpacity(0.3),
-            Colors.black.withOpacity(0.1),
+            Colors.grey.withOpacity(0.09),
+            Colors.blue.withOpacity(0.06),
+            Colors.grey.withOpacity(0.09),
           ], // Define your gradient colors
         ),
       ),
-      child: SlideTransition(
-        position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
         child: buildScreen(context),
       ),
     );

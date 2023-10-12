@@ -39,9 +39,6 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -69,7 +66,7 @@ class _MainMenuState extends State<MainMenu> {
                 alignment: Alignment.bottomLeft,
                 child: 
                 ElevatedButton(onPressed: () {
-                  AlertDialogUtil.showConfirmationDialog(message: "Are you sure you would like to sign out?", onConfirm: authProvider.handleSignOut, context: context);
+                  AlertDialogUtil.showConfirmationDialog(message: "Are you sure you would like to sign out?", onConfirm: (){}, context: context);
 
                   },
                   child: Icon(Icons.menu),)

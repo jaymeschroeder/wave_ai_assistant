@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wave_ai_assistant/screens/settings_screen.dart';
+import 'package:wave_ai_assistant/screens/subscription_screen.dart';
 import 'package:wave_ai_assistant/screens/translation_screen.dart';
 import 'package:wave_ai_assistant/widgets/base_screen_state.dart';
 
@@ -17,16 +18,13 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends BaseScreenState<MainScreen> {
-  late AuthProvider authProvider;
   Widget? _currentScreen;
 
   @override
   void initState() {
     super.initState();
 
-    authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    _currentScreen = Container();
+    _currentScreen = AssistantScreen();
   }
 
   @override
@@ -62,7 +60,7 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
           ),
           centerTitle: true,
           title: RichText(
-            text: TextSpan(
+            text: const TextSpan(
               children: [
                 TextSpan(
                   text: 'Wave',
@@ -136,11 +134,11 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.person_outlined,
                     color: Colors.white,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Assistant',
                     style: TextStyle(color: Colors.white70),
                   ),
@@ -153,11 +151,11 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.translate_rounded,
                     color: Colors.white,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Translation',
                     style: TextStyle(color: Colors.white70),
                   ),
@@ -170,11 +168,28 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
+                    Icons.subscriptions_rounded,
+                    color: Colors.purpleAccent,
+                  ),
+                  title: const Text(
+                    'Subscription',
+                    style: TextStyle(color: Colors.purpleAccent),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _currentScreen = SubscriptionScreen();
+                    });
+                    // Handle drawer item tap for Settings
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
                     Icons.settings_rounded,
                     color: Colors.white,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Settings',
                     style: TextStyle(color: Colors.white70),
                   ),
@@ -183,19 +198,6 @@ class _MainScreenState extends BaseScreenState<MainScreen> {
                     setState(() {
                       _currentScreen = SettingsScreen();
                     });
-                    // Handle drawer item tap for Settings
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.chat_rounded,
-                    color: Colors.white,
-                  ),
-                  title: Text(
-                    'Show Text View',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  onTap: () {
                     // Handle drawer item tap for Settings
                   },
                 ),

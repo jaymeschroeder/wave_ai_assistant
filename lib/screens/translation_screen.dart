@@ -31,15 +31,10 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
   bool isProcessing = false; // Add a flag for processing speech
   bool isResponseInListFormat = false; // Add a variable to track list format response
 
-  List<String> steps = []; // Store the list of steps or items
-
-  TextEditingController textController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
 
-    textController.text = "Hellow this is text";
     try {
       initializeTextToSpeech();
     } catch (error) {
@@ -164,10 +159,6 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
   Future<void> initializeTextToSpeech() async {
     List<dynamic> voices = await flutterTts.getVoices;
 
-    voices.forEach((element) {
-      print(element);
-    });
-
     await flutterTts.setLanguage("en-US");
     await flutterTts.setPitch(1.2);
 
@@ -230,7 +221,6 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
             print("TTS RESULT : $result");
             setState(() {
               recognizedText = result.recognizedWords;
-              textController.text = recognizedText;
             });
           },
         );
@@ -264,7 +254,7 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
     // Implement logic to send recognizedText to ChatGPT API
     // and play the response using text-to-speech
 
-    ChatGPTService.startNewConversation();
+    ChatGPTService.resetAssistant();
 
     setState(() {
       previousMessage = "";
