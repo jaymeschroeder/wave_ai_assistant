@@ -10,6 +10,7 @@ import 'package:wave_ai_assistant/screens/assistant_screen.dart';
 import 'package:wave_ai_assistant/screens/intro.dart';
 import 'package:wave_ai_assistant/screens/login_page.dart';
 import 'package:wave_ai_assistant/screens/main_screen.dart';
+import 'package:wave_ai_assistant/services/TTSService.dart';
 import 'package:wave_ai_assistant/services/firebase_service.dart';
 import 'package:wave_ai_assistant/services/shared_preferences_service.dart';
 import 'package:wave_ai_assistant/services/stripe_service.dart';
@@ -59,7 +60,7 @@ class _MainState extends State<Main> {
     authProvider.authStateChanges.listen((user) {
       if (user != null) {
         authProvider.setUser(user); // Update the user state in authProvider
-        FirebaseService.addUserToFirestore(user);
+
       }
     });
   }

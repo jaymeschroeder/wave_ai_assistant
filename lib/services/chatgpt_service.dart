@@ -57,6 +57,7 @@ class ChatGPTService {
       } else {
         // Replace "OpenAI" with "Wave AI" in the response
         reply = reply.replaceAll("OpenAI", "Wave AI");
+        reply = reply.replaceAll("ChatGPT", "Wave Assistant");
       }
 
       // Add the assistant reply to the conversation history
@@ -76,16 +77,17 @@ class ChatGPTService {
       Uri.parse("$BASE_URL/chat/completions"),
       headers: {
         'Authorization': 'Bearer $OPENAI_API_KEY',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8', // Set the charset to utf-8
       },
       body: jsonEncode({
         "model": "gpt-3.5-turbo",
         "messages": [
-          {"role": "system", "content": "You are a helpful assistant that translates text."},
+          {"role": "system", "content": "You are a translator and you do not provide any other information than responding with the translation."},
           {"role": "user", "content": completeMessage},
         ],
-        "temperature": 0.2,
+        "temperature": 0.6,
       }),
+      encoding: Encoding.getByName('utf-8'), // Set the encoding explicitly
     );
 
     if (res.statusCode == 200) {

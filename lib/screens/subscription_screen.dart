@@ -26,8 +26,6 @@ class _SubscriptionScreenState extends BaseScreenState<SubscriptionScreen> {
   @override
   void initState() {
     super.initState();
-
-    //StripeService.getSubscriptions(customerId)
   }
 
   @override
@@ -40,7 +38,7 @@ class _SubscriptionScreenState extends BaseScreenState<SubscriptionScreen> {
         if (snapshot.data == null) {
           return Center(
               child: const CircularProgressIndicator(
-            color: Colors.purpleAccent,
+            color: Colors.cyan,
           ));
         } else if (snapshot.data == false) {
           return Center(
@@ -55,14 +53,15 @@ class _SubscriptionScreenState extends BaseScreenState<SubscriptionScreen> {
                     icon: const Icon(
                       Icons.subscriptions,
                       size: 42,
-                      color: Colors.purpleAccent,
+                      color: Colors.cyan,
                     )),
           );
         } else {
-          return Center(
-              child: const Text(
+          return const Center(
+              child: Text(
             "Thank you for being a subscriber!",
-            style: TextStyle(fontSize: 42, color: Colors.white70),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 32, color: Colors.white70),
           ));
         }
       },

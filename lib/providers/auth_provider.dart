@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wave_ai_assistant/services/firebase_service.dart';
+import 'package:wave_ai_assistant/services/shared_preferences_service.dart';
 
 // Add the following line to the build method to retrieve state
 // final authProvider = Provider.of<AuthProvider>(context);
@@ -13,6 +15,7 @@ class AuthProvider with ChangeNotifier {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final FacebookAuth facebookAuth = FacebookAuth.instance;
 
+  String? _anonymousUid;
   User? _user;
 
   User? get user => _user;
@@ -63,6 +66,8 @@ class AuthProvider with ChangeNotifier {
 
         setUser(user);
 
+        FirebaseService.addUserToFirestore(user!);
+
         return user;
       } catch (error) {
         print(error);
@@ -85,6 +90,48 @@ class AuthProvider with ChangeNotifier {
     } catch (error) {
       print(error);
       return null;
+    }
+  }
+
+  Future<User?> signInAnonymously() async {
+    // Check if the user is already signed in anonymously
+    _anonymousUid = await SharedPreferencesService.getAnonymousUid();
+
+    if (_anonymousUid != null && _anonymousUid != '') {
+      try {
+        UserCredential authResult = await _auth.signInAnonymously();
+        User? user = authResult.user;
+        // Check if the newly signed-in user has the same UID as the previously stored one
+        if (user?.uid != _anonymousUid) {
+          await user?.delete();
+          authResult = await _auth.signInAnonymously();
+          user = authResult.user;
+        }
+        setUser(user);
+        FirebaseService.updateAnonymousUser(_anonymousUid!, user!.uid);
+
+        _anonymousUid = user?.uid;
+        await SharedPreferencesService.setAnonymousUid(_anonymousUid!);
+        return user;
+      } catch (error) {
+        print(error);
+        return null;
+      }
+    } else {
+      try {
+        UserCredential authResult = await _auth.signInAnonymously();
+        User? user = authResult.user;
+
+        FirebaseService.updateAnonymousUser(_anonymousUid!, user!.uid);
+
+        _anonymousUid = user.uid;
+        await SharedPreferencesService.setAnonymousUid(_anonymousUid!);
+        setUser(user);
+        return user;
+      } catch (error) {
+        print(error);
+        return null;
+      }
     }
   }
 

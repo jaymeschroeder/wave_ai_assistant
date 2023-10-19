@@ -51,6 +51,62 @@ class FirebaseService {
     }
   }
 
+  static Future<void> updateAnonymousUser(String previousUid, String newUid) async {
+    final firestore = FirebaseFirestore.instance;
+    final userRef = firestore.collection('Users');
+
+    try {
+      // Get the data from the previous UID
+      if (previousUid.isNotEmpty) {
+        DocumentSnapshot previousUserDoc = await userRef.doc(previousUid).get();
+        print("FIREBASE: Previous uid is not empty");
+        if (previousUserDoc.exists) {
+          print("FIREBASE: Previous user doc exists");
+          Map<String, dynamic> userData = previousUserDoc.data() as Map<String, dynamic>;
+          String email = userData['email'];
+          String displayName = userData['displayName'];
+          String stripeCustomerId = userData['stripe_customer_id'];
+
+          // Set the data with the new UID
+          await userRef.doc(newUid).set({
+            'uid': newUid,
+            'email': email,
+            'displayName': displayName,
+            'stripe_customer_id': stripeCustomerId,
+          });
+
+          try{
+            // Delete the previous UID data
+            print("FIREBASE: Deleting doc $previousUid");
+            await userRef.doc(previousUid).delete();
+
+          } catch (e){
+            print("FIREBASE ERROR: $e");
+          }
+
+        } else {
+          // Set the data with the new UID
+          await userRef.doc(newUid).set({
+            'uid': newUid,
+            'email': 'anon',
+            'displayName': 'anon',
+            'stripe_customer_id': '',
+          });
+        }
+      } else {
+        // Set the data with the new UID
+        await userRef.doc(newUid).set({
+          'uid': newUid,
+          'email': 'anon',
+          'displayName': 'anon',
+          'stripe_customer_id': '',
+        });
+      }
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
+  }
+
   static Future<String?> getUserName(String userId) async {
     final firestore = FirebaseFirestore.instance;
     final userRef = firestore.collection('Users').doc(userId);

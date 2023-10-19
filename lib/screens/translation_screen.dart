@@ -10,6 +10,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:wave_ai_assistant/widgets/frosted_glass_background.dart';
 
 import '../constants/constants.dart';
+import '../services/TTSService.dart';
 import '../services/chatgpt_service.dart';
 import '../utils/language_util.dart';
 import '../widgets/base_screen_state.dart';
@@ -21,22 +22,18 @@ class TranslationScreen extends StatefulWidget {
 }
 
 class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
-  final FlutterTts flutterTts = FlutterTts();
-  final stt.SpeechToText speech = stt.SpeechToText();
-  String recognizedText = '';
-  String statusText = "Not Listening";
-  String previousMessage = '';
-  String currentLanguage = "en-US";
-  bool isListening = false;
-  bool isProcessing = false; // Add a flag for processing speech
-  bool isResponseInListFormat = false; // Add a variable to track list format response
-
   @override
   void initState() {
     super.initState();
 
+    TTSService.setOnComplete((){
+      setState(() {
+
+      });
+    });
+
     try {
-      initializeTextToSpeech();
+      TTSService.initializeTextToSpeech();
     } catch (error) {
       print("TTS ERROR: $error");
     }
@@ -54,10 +51,17 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
             child: CoolDropdown(
                 isMarquee: true,
                 defaultItem: CoolDropdownItem(
-                    label: 'English (United States)',
-                    value: "en-US",
+                    label: LanguageUtil()
+                        .languages
+                        .firstWhere((element) => element.code == TTSService.currentLanguage)
+                        .name,
+                    value: TTSService.currentLanguage,
                     icon: CountryFlag.fromCountryCode(
-                      "en-US".substring(3),
+                      LanguageUtil()
+                          .languages
+                          .firstWhere((element) => element.code == TTSService.currentLanguage)
+                          .code
+                          .substring(3),
                       height: 24,
                       width: 24,
                       borderRadius: 8,
@@ -90,8 +94,8 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
                     .toList(),
                 controller: DropdownController(),
                 onChange: (value) async {
-                  currentLanguage = value;
-                  await flutterTts.setLanguage(value);
+                  TTSService.currentLanguage = value;
+                  await TTSService.setLanguage(value);
                 }),
           ),
         ),
@@ -100,7 +104,7 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
           height: 150.0, // Set a fixed height for the container
           alignment: Alignment.center, // Center its content vertically
           child: Visibility(
-            visible: isListening,
+            visible: TTSService.isListening,
             child: SpinKitPulse(
               duration: const Duration(seconds: 3),
               color: primaryColor,
@@ -109,7 +113,7 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
           ),
         ),
         Text(
-          statusText, // When listening or not listening
+          TTSService.statusText, // When listening or not listening
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -127,7 +131,7 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
         Padding(
           padding: const EdgeInsets.all(24.0),
           child: Text(
-            statusText == "Not Listening" ? previousMessage : recognizedText,
+            TTSService.statusText == "Not Listening" ? TTSService.previousMessage : TTSService.recognizedText,
             style: const TextStyle(color: Colors.white70),
           ),
         ),
@@ -137,9 +141,11 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
           padding: const EdgeInsets.all(18.0),
           child: GradientButton(
             () {
-              isProcessing ? null : (isListening ? stopListening() : startListening());
+              TTSService.isProcessing
+                  ? null
+                  : (TTSService.isListening ? TTSService.stopListening() : TTSService.startListening(true));
             },
-            iconColor: (statusText == "Listening") ? Colors.cyan : Colors.grey,
+            iconColor: (TTSService.statusText == "Listening") ? Colors.cyan : Colors.grey,
             buttonSize: 75,
           ),
         ),
@@ -156,112 +162,9 @@ class _TranslationScreenState extends BaseScreenState<TranslationScreen> {
     }
   }
 
-  Future<void> initializeTextToSpeech() async {
-    List<dynamic> voices = await flutterTts.getVoices;
-
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.2);
-
-    await flutterTts.setSpeechRate(0.5);
-
-    // Call this function before starting speech recognition
-    await checkAndRequestMicrophonePermission();
-  }
-
-  Future<void> startListening() async {
-    try {
-      if (await speech.initialize(
-        onError: (error) {
-          print(error);
-        },
-        onStatus: (status) async {
-          print("SPEECH STATUS: $status");
-          if (status == stt.SpeechToText.listeningStatus) {
-            setState(() {
-              statusText = "Listening";
-              isListening = true;
-            });
-          }
-          if (status == stt.SpeechToText.doneStatus) {
-            if (recognizedText.isNotEmpty) {
-              setState(() {
-                print("Changing status text");
-                statusText = "Processing";
-              });
-
-              String response = await ChatGPTService.translateMessage(recognizedText, currentLanguage);
-
-              print(response);
-              // Read out the response using text-to-speech
-              setState(() {
-                previousMessage = recognizedText;
-                recognizedText = ''; // Reset recognizedText
-                statusText = "Wave Assistant Speaking";
-              });
-
-              flutterTts.setCompletionHandler(() {
-                setState(() {
-                  statusText = "Not Listening";
-                });
-              });
-
-              await flutterTts.speak(response);
-            } else {
-              setState(() {
-                statusText = "Not Listening";
-              });
-            }
-
-            stopListening();
-          }
-        },
-      )) {
-        speech.listen(
-          onResult: (result) async {
-            print("TTS RESULT : $result");
-            setState(() {
-              recognizedText = result.recognizedWords;
-            });
-          },
-        );
-      }
-    } catch (error) {
-      print("TTS Error: $error");
-    }
-  }
-
-  Future<void> stopListening() async {
-    try {
-      await speech.stop();
-      setState(() {
-        isListening = false;
-        isProcessing = true; // Set processing flag to true
-      });
-
-      // Implement logic to send recognizedText to ChatGPT API
-      // and play the response using text-to-speech
-
-      // After processing, reset the processing flag to false
-      setState(() {
-        isProcessing = false;
-      });
-    } catch (error) {
-      print("TTS Error: $error");
-    }
-  }
-
-  Future<void> resetConversation() async {
-    // Implement logic to send recognizedText to ChatGPT API
-    // and play the response using text-to-speech
-
-    ChatGPTService.resetAssistant();
-
-    setState(() {
-      previousMessage = "";
-      recognizedText = "";
-    });
-
-    // Read out the response using text-to-speech
-    await flutterTts.speak("Conversation cleared");
+  @override
+  void dispose() {
+    TTSService.dispose();
+    super.dispose();
   }
 }

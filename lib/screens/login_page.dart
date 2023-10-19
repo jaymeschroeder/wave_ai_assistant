@@ -5,6 +5,7 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wave_ai_assistant/constants/constants.dart';
+import 'package:wave_ai_assistant/services/shared_preferences_service.dart';
 
 import '../providers/auth_provider.dart';
 import '../widgets/base_screen_state.dart';
@@ -20,7 +21,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends BaseScreenState<LoginPage> {
   @override
   Widget buildScreen(BuildContext context) {
-
     return Material(
       color: Colors.white.withOpacity(0),
       child: Stack(
@@ -117,6 +117,7 @@ class _LoginPageState extends BaseScreenState<LoginPage> {
                 ),
                 SizedBox(height: 20),
 
+                /*
                 // Facebook Sign-In Button
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -139,10 +140,13 @@ class _LoginPageState extends BaseScreenState<LoginPage> {
                 ),
                 SizedBox(height: 20),
 
+                 */
+
                 // Continue Without Logging In Button
                 TextButton(
                   onPressed: () {
                     // Handle continue without logging in
+                    authProvider.signInAnonymously();
                   },
                   child: Text(
                     'Continue Without Logging In',
